@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: zava-storefront
+metadata:
+  template: ZavaStorefront
+
+services:
+  web:
+    project: ./src
+    language: dotnet
+    host: appservice
+    docker:
+      path: ./src/Dockerfile
+      context: ./src
+
+hooks:
+  predeploy:
+    shell: sh
+    run: |
+      REGISTRY_NAME=$(az acr list --resource-group rg-dev --query "[0].name" -o tsv)
+      echo "Building and pushing Docker image to ACR: $REGISTRY_NAME"
+      az acr build \
+        --registry "$REGISTRY_NAME" \
+        --image web:latest \
+        --file ./src/Dockerfile \
+        ./src
+
+infra:
+  provider: bicep
+  path: ./infra
+  module: main

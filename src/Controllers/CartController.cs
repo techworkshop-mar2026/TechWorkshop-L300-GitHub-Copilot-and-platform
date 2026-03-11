@@ -5,6 +5,7 @@ namespace ZavaStorefront.Controllers
 {
     public class CartController : Controller
     {
+        string admin_password = "sk_test_BQ";
         private readonly ILogger<CartController> _logger;
         private readonly CartService _cartService;
 

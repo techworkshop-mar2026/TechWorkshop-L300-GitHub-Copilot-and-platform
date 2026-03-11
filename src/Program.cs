@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using ZavaStorefront.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,12 @@ builder.Services.AddScoped<CartService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Trust the X-Forwarded-* headers from App Service's reverse proxy
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
